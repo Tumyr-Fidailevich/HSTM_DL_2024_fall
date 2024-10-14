@@ -82,36 +82,41 @@ def add_acceleration(data, dt=1):
     num_bodies = 3
 
     # Новый массив, который будет на одну строку короче, так как исключаем первый год - не можем вычислить разницу
-    new_data = np.zeros((data.shape[0], num_bodies * 6 * (years - 1)))  # 6 столбцов: x, y, vx, vy, ax, ay
+    original_dofs = 4 # 4 столбца: x, y, vx, vy
+    extended_dofs = 4 # 6 столбцов: x, y, vx, vy, ax, ay
+    new_data = np.zeros((data.shape[0], num_bodies * extended_dofs * (years - 1)))
 
     # Заполняем измерения построчно
-    for i in range(1, data.shape[0]):
+    for i in range(data.shape[0]):
         row = []
         # для каждого года, но на один меньше
-        for year in range(years - 1):
+        for year in range(1, years):
             bodies_in_year = []
             # для каждого тедла
             for body in range(num_bodies):
                 # Индексы текущего тела
-                idx_x = body * 4
-                idx_y = body * 4 + 1
-                idx_vx = body * 4 + 2
-                idx_vy = body * 4 + 3
+                year_shift = num_bodies * original_dofs * year
+                body_shift = body * original_dofs
+                idx_x = body_shift + year_shift + 0
+                idx_y = body_shift + year_shift + 1
+                idx_vx = body_shift + year_shift + 2
+                idx_vy = body_shift + year_shift + 3
 
                 # Текущие координаты и скорости
                 x, y = data[i, idx_x], data[i, idx_y]
                 vx, vy = data[i, idx_vx], data[i, idx_vy]
 
                 # Предыдущие скорости
-                prev_vx = data[i-1, idx_vx]
-                prev_vy = data[i-1, idx_vy]
+                prev_vx = data[i, idx_vx - num_bodies * original_dofs]
+                prev_vy = data[i, idx_vy - num_bodies * original_dofs]
 
                 # Вычисляем ускорения
                 ax = (vx - prev_vx) / dt
                 ay = (vy - prev_vy) / dt
 
                 # Добавляем координаты, скорости и ускорения для текущего тела
-                bodies_in_year.extend([x, y, vx, vy, ax, ay])
+                # bodies_in_year.extend([x, y, vx, vy, ax, ay])
+                bodies_in_year.extend([vx, vy, ax, ay])
             row.extend(bodies_in_year)
         new_data[i] = row  # Заполняем новую строку
 
@@ -141,9 +146,9 @@ def load_data(train_csv_path: str, val_csv_path: str, test_csv_path: str):
     X_test = test_df[feature_columns].values
 
     # Добаляем ускорения
-    # X_train = add_acceleration(X_train)
-    # X_val = add_acceleration(X_val)
-    # X_test = add_acceleration(X_test)
+    X_train = add_acceleration(X_train)
+    X_val = add_acceleration(X_val)
+    X_test = add_acceleration(X_test)
 
     # применияем нормализацию
     scaler = StandardScaler()
