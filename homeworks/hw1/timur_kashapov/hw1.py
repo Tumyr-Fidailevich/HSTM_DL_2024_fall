@@ -251,7 +251,7 @@ def main(args):
     X_train, y_train, X_val, y_val, X_test = load_data(args.train_csv, args.val_csv, args.test_csv)
 
     # Initialize model
-    model, criterion, optimizer, scheduler = init_model(X_train.size(1), hidden_size, output_size, args.lr)
+    model, https://discord.gg/3e2AQzvEcriterion, optimizer, scheduler = init_model(X_train.size(1), hidden_size, output_size, args.lr)
     # Train model
     train(model, criterion, optimizer, scheduler, X_train, y_train, X_val, y_val, args.num_epoches, args.batch_size)
     # Predict on test set

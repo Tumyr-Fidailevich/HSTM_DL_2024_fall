@@ -10,3 +10,4 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
 *.ckpt filter=lfs diff=lfs merge=lfs -text
 homeworks/hw1/data/submission.csv filter=lfs diff=lfs merge=lfs -text
+homeworks/hw2/data filter=lfs diff=lfs merge=lfs -text
